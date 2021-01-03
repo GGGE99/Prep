@@ -1,5 +1,6 @@
 import { getToken } from "./token";
 
+
 export function handleHttpErrors(res) {
   if (!res.ok) {
     return Promise.reject({ status: res.status, fullError: res.json() });

@@ -1,30 +1,32 @@
 import { makeOptions, handleHttpErrors } from "../utils/fetchUtils";
-import { loginURL as URL } from "../utils/settings";
+import { loginURL as base } from "../utils/settings";
 
 function apiFacade() {
+  const URL = base + "api/"
+
   const login = (user, password) => {
     const options = makeOptions("POST", true, {
       username: user,
       password: password,
     });
-    return fetch(URL + "/api/login", options)
+    return fetch(URL + "login", options)
       .then(handleHttpErrors)
   };
 
   const signup = (username, password) => {
-    const options = makeOptions("POST", true, {
+    const options = makeOptions("POST", false, {
       username,
       password,
     });
     return fetch(
-      "http://localhost:8080/jpareststarter/api/signup",
+      URL + "signup",
       options
     ).then(handleHttpErrors);
   };
 
   const fetchUserRole = (user) => {
     const options = makeOptions("GET", true);
-    return fetch(URL + "/api/info/" + user, options).then(handleHttpErrors);
+    return fetch(URL + "user/" + user, options).then(handleHttpErrors);
   };
 
   return {

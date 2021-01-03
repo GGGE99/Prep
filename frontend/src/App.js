@@ -2,28 +2,27 @@ import React, { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Container } from "react-bootstrap";
-import { Jokes, Signup, Login, Home } from "./components";
+import { Jokes, Signup, Login, Home, Users } from "./components";
 import { getUserByJwt, setToken } from "./utils/token";
-import {loginMethod, logoutMethode} from './utils/loginUtils'
+import { loginMethod, logoutMethode } from "./utils/loginUtils";
 
 function App() {
   const init = { username: "", roles: [] };
-  const [user, setUser] = useState({...init});
-  const login = (user, pass) => loginMethod(user, pass, setUser)
-  const logout = () => logoutMethode(setUser, init)
-
-
+  const [user, setUser] = useState({ ...init });
+  const [error, setError] = useState("");
+  const login = (user, pass) => loginMethod(user, pass, setUser, setError);
+  const logout = () => logoutMethode(setUser, init);
 
   useEffect(() => {
-    if(getUserByJwt()){
-      setUser(getUserByJwt())
+    if (getUserByJwt()) {
+      setUser(getUserByJwt());
     }
-  },[]);
+  }, []);
 
   return (
     <>
       <Router>
-        <Navbar user={user} logout={logout}/>
+        <Navbar user={user} logout={logout} />
         <Switch>
           <Container fluid>
             <Route path="/" exact>
@@ -34,10 +33,13 @@ function App() {
             </Route>
             <Route path="/products" />
             <Route path="/signin">
-              <Login login={login} user={user} logout={logout} />
+              <Login login={login} user={user} logout={logout} error={error} />
             </Route>
             <Route path="/signup">
-              <Signup />
+              <Signup setUser={setUser} setError={setError} error={error} />
+            </Route>
+            <Route path="/users">
+              <Users setError={setError}/>
             </Route>
           </Container>
         </Switch>

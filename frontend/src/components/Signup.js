@@ -1,11 +1,14 @@
 import facade from "../facades/LoginFacade";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Jumbotron, Row, Col, Form } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
+import { getUserByJwt, setToken } from "../utils/token";
 
-function Signup() {
+function Signup({ setUser, setError, error }) {
   const init = { username: "", password1: "", password2: "" };
   const [loginCredentials, setLoginCredentials] = useState(init);
-  const [error, setError] = useState("");
+
+  let history = useHistory();
 
   const performLogin = (evt) => {
     evt.preventDefault();
@@ -17,7 +20,12 @@ function Signup() {
       if (loginCredentials.password1 === loginCredentials.password2) {
         facade
           .signup(loginCredentials.username, loginCredentials.password1)
-          .then((data) => console.log(data))
+          .then((data) => {
+            setToken(data.token);
+            setUser({ ...getUserByJwt() });
+            setError("");
+            history.push("/");
+          })
           .catch((err) => {
             if (err.status) {
               err.fullError.then((e) => {
@@ -51,9 +59,17 @@ function Signup() {
             <Form.Label>Name</Form.Label>
             <Form.Control id="username" type="name" placeholder="Enter name" />
             <Form.Label>Password</Form.Label>
-            <Form.Control id="password1" type="Password" placeholder="Enter Password" />
+            <Form.Control
+              id="password1"
+              type="Password"
+              placeholder="Enter Password"
+            />
             <Form.Label>Repeat Password</Form.Label>
-            <Form.Control id="password2" type="Password" placeholder="Enter Password" />
+            <Form.Control
+              id="password2"
+              type="Password"
+              placeholder="Enter Password"
+            />
             <button className="btn btn-primary m-2" onClick={performLogin}>
               Sign UP
             </button>

@@ -1,8 +1,9 @@
+import { Button } from "bootstrap";
 import React, { useState } from "react";
 import { Jumbotron, Row, Col, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-function LoginDisplay({ login, user, logout }) {
+function LoginDisplay({ login, user, logout, error }) {
   const init = { username: "", password: "" };
   const [loginCredentials, setLoginCredentials] = useState(init);
 
@@ -23,7 +24,7 @@ function LoginDisplay({ login, user, logout }) {
         <Jumbotron className="mt-2 text-center">
           {!user.username ? (
             <>
-              <Form.Group controlId="formBasicEmail" onChange={onChange}>
+              <Form.Group controlId="formBasicEmail" onChange={onChange} onKeyPress={(evt) => {if(evt.charCode === 13)performLogin(evt)}}>
                 <Form.Label>Name</Form.Label>
                 <Form.Control
                   id="username"
@@ -41,6 +42,7 @@ function LoginDisplay({ login, user, logout }) {
                   login
                 </button>
               </Form.Group>
+              <p>{error}</p>
               <Link to="/signup">Sign-up</Link>
             </>
           ) : (
