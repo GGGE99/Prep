@@ -28,5 +28,5 @@ yarn-error.log*
 
 /nbproject/
 
-Env.java
+./backend/src/main/java/utils/Env.java
 settings.js
