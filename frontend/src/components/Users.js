@@ -22,9 +22,9 @@ export default function Users({ setError }) {
       });
   }, []);
 
-  const editRole = (role) => {
+  const editRole = (role, user) => {
     userFacade
-      .editRole(role)
+      .editRole(role, user)
       .then((data) => console.log(data))
       .catch((err) => {
         if (err.status) {
@@ -37,13 +37,13 @@ export default function Users({ setError }) {
       });
   };
 
-  function TD({ color, role }) {
+  function TD({ color, role, user }) {
     return (
       <td
         style={{ background: color }}
         onClick={(evt) => {
           evt.nativeEvent.originalTarget.style.background = "blue";
-          editRole(role);
+          editRole(role, user);
         }}
       ></td>
     );
@@ -67,14 +67,14 @@ export default function Users({ setError }) {
                 <tr>
                   <td>{user.username}</td>
                   {user.roles.includes("user") ? (
-                    <TD color="green" role="user" />
+                    <TD color="green" role="user" user={user.username} />
                   ) : (
-                    <TD color="red" role="user" />
+                    <TD color="red" role="user" user={user.username}/>
                   )}
                   {user.roles.includes("admin") ? (
-                    <TD color="green" role="admin" />
+                    <TD color="green" role="admin" user={user.username}/>
                   ) : (
-                    <TD color="red" role="admin" />
+                    <TD color="red" role="admin" user={user.username} />
                   )}
                 </tr>
               );

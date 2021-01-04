@@ -22,7 +22,7 @@ function NavbarShow({ user, logout }) {
               <button className="btn btn-danger" onClick={logout}>
                 Logout
               </button>
-              {user.roles !== "admin" && (
+              {user.roles.includes("admin") && (
                 <>
                   <Link to="/users">
                     <button className="btn btn-primary ml-2">

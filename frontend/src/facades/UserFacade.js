@@ -9,8 +9,8 @@ function userFacade() {
     return fetch(URL + "all", options).then(handleHttpErrors);
   };
 
-  const editRole = (role) => {
-    const options = makeOptions("POST", true, { role });
+  const editRole = (role, username) => {
+    const options = makeOptions("POST", true, { role, username });
     return fetch(URL + "edit-role", options).then(handleHttpErrors);
   };
 
