@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import entities.Role;
 import entities.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,12 @@ public class UserResource {
 
     @Context
     SecurityContext securityContext;
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getInfoForAll() {
+        return "{\"msg\":\"Hello anonymous\"}";
+    }
 
     //Just to verify if the database is setup
     @GET
@@ -115,30 +122,37 @@ public class UserResource {
         return obj.toString();
     }
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("edit-role")
     @RolesAllowed("admin")
-    public String editRole() {
+    public String editRole(String input) {
+        JsonObject obj = GSON.fromJson(input, JsonObject.class);
+
         String thisuser = securityContext.getUserPrincipal().getName();
         EntityManager em = EMF.createEntityManager();
-        try{
-            User user = em.find(User.class, thisuser);
-            System.out.println(user);
-        } catch (Exception e) {
-            
-        }
-        
-        JsonObject obj = new JsonObject();
-        obj.addProperty("name", thisuser);
-        JsonArray array = new JsonArray();
-        array.add("admin");
-        boolean s = securityContext.isUserInRole("user");
-        if (s) {
-            array.add("user");
-        }
-        obj.add("roles", array);
+        User user = null;
+        Role role = null;
+        String userString = obj.get("username").toString();
+        String roleString = obj.get("role").toString();
 
-        return obj.toString();
+        try {
+            user = em.createQuery("SELECT u FROM User u WHERE u.userName = " + userString, User.class).getSingleResult();
+            role = em.createQuery("SELECT r FROM Role r WHERE r.roleName = " + roleString, Role.class).getSingleResult();
+
+            em.getTransaction().begin();
+            if (user.getRoleList().contains(roleString)) {
+                user.removeRole(role);
+            } else {
+                user.addRole(role);
+            }
+            em.getTransaction().commit();
+
+        } catch (Exception e) {
+            System.out.println("err");
+        }
+
+//        JsonObject obj = new JsonObject();
+        return GSON.toJson(new UserDTO(user));
     }
 }

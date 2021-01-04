@@ -33,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import utils.EMF_Creator;
+import utils.Env;
 import utils.HttpUtils;
 import utils.JokeFinder;
 
@@ -62,12 +63,13 @@ public class JokeResource {
 //    @Path("jokes")
 //    @RolesAllowed("user")
     public String getJokes() throws IOException, InterruptedException, ExecutionException, TimeoutException {
+        Env ENV = Env.GetEnv();
         List<String> URLS = new ArrayList();
-        URLS.add("https://geek-jokes.sameerkumar.website/api?format=json");
-        URLS.add("https://matchilling-tronald-dump-v1.p.rapidapi.com/random/quote");
-        URLS.add("https://sv443.net/jokeapi/v2/joke/Any?format=txt&type=single");
-        URLS.add("https://api.chucknorris.io/jokes/random");
-        URLS.add("https://icanhazdadjoke.com");
+        URLS.add(ENV.jokeURL1);
+        URLS.add(ENV.jokeURL2);
+        URLS.add(ENV.jokeURL3);
+        URLS.add(ENV.jokeURL4);
+        URLS.add(ENV.jokeURL5);
 
         List<JokeFinder> urls = new ArrayList();
         for (String string : URLS) {

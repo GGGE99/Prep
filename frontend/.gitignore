@@ -27,3 +27,6 @@ yarn-error.log*
 **/nb-configuration.xml
 
 /nbproject/
+
+Env.java
+settings.js
