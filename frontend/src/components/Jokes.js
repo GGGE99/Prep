@@ -8,6 +8,7 @@ export default function Jokes() {
   }, []);
 
   return (
+    <>
     <div className="text-center w-100">
       <h1 className="p-3" style={{borderBottom: 2+"px solid black"}}>Jokes</h1>
       {dataFromServer.isEmpty ? (
@@ -22,5 +23,6 @@ export default function Jokes() {
         </>
       )}
     </div>
+    </>
   );
 }

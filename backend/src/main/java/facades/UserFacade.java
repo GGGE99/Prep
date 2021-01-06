@@ -3,19 +3,24 @@ package facades;
 import DTOs.UserDTO;
 import entities.Role;
 import entities.User;
+import errorhandling.DatabaseException;
 import errorhandling.InvalidInputException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import security.errorhandling.AuthenticationException;
+import utils.EMF_Creator;
+import utils.Env;
 
-/**
- * @author lam@cphbusiness.dk
- */
 public class UserFacade {
 
     private static EntityManagerFactory emf;
     private static UserFacade instance;
+    private static Env env = Env.GetEnv();
+    private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
 
     private UserFacade() {
     }
@@ -54,7 +59,8 @@ public class UserFacade {
             Query query = em.createQuery("SELECT u.userName FROM User u WHERE u.userName = :name");
             query.setParameter("name", userDTO.getName());
             name = (String) query.getSingleResult();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         if (name != null) {
             throw new InvalidInputException(String.format("The name %s is already taken", name));
@@ -69,6 +75,28 @@ public class UserFacade {
         em.getTransaction().commit();
 
         return new UserDTO(user);
+    }
+
+    public User findUser(String username) throws DatabaseException {
+        EntityManager em = EMF.createEntityManager();
+
+        try {
+            User user = em.find(User.class, username);
+            return user;
+        } catch (Exception ex) {
+            throw new DatabaseException(String.format("User with username (%s) was not found in database", username));
+        }
+    }
+
+    public List<User> getAllUsers() throws DatabaseException {
+        EntityManager em = EMF.createEntityManager();
+        ArrayList<UserDTO> userDTOs = new ArrayList();
+        try {
+            TypedQuery<User> query = em.createQuery("select u from User u", entities.User.class);
+            return query.getResultList();
+        } catch(Exception ex){
+            throw new DatabaseException("Could not get users from database");
+        }
     }
 
 }

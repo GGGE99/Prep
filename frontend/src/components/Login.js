@@ -1,4 +1,3 @@
-import { Button } from "bootstrap";
 import React, { useState } from "react";
 import { Jumbotron, Row, Col, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -46,13 +45,13 @@ function LoginDisplay({ login, user, logout, error }) {
               <Link to="/signup">Sign-up</Link>
             </>
           ) : (
-            <div>
+            <>
               <h1>username: {user.username}</h1>
 
               <button className="btn btn-danger" onClick={logout}>
                 Logout
               </button>
-            </div>
+            </>
           )}
         </Jumbotron>
       </Col>

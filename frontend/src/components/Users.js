@@ -4,11 +4,14 @@ import userFacade from "../facades/UserFacade";
 
 export default function Users({ setError }) {
   const [users, setUsers] = useState([]);
+  const [usersTable, setUsersTable] = useState([]);
+
   useEffect(() => {
     userFacade
       .fetchUsers()
       .then((data) => {
         setUsers([...data]);
+        setUsersTable([...data])
         console.log(data);
       })
       .catch((err) => {
@@ -49,33 +52,58 @@ export default function Users({ setError }) {
     );
   }
 
+  const search = (evt) => {
+    const val = evt.target.value
+    let tempArr = []
+    users.map((user) => {
+      if(user.username.includes(val)){
+        tempArr = [...tempArr, user]
+      }
+    })
+    setUsersTable([...tempArr])
+    console.log(evt.target.value)
+  }
+
+  const deleteUser = (username) => {
+    console.log(username)
+  }
+
   return (
     <Row>
       <Col></Col>
       <Col>
+        <input
+          type="text"
+          class="form-control"
+          id="searchInput"
+          placeholder="Username"
+          onChange={search}
+        />
         <Table striped bordered hover variant="dark">
           <thead>
             <tr>
               <th>Username</th>
               <th>User</th>
               <th>Admin</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => {
+            {usersTable.map((user) => {
               return (
                 <tr>
                   <td>{user.username}</td>
                   {user.roles.includes("user") ? (
                     <TD color="green" role="user" user={user.username} />
                   ) : (
-                    <TD color="red" role="user" user={user.username}/>
+                    <TD color="red" role="user" user={user.username} />
                   )}
                   {user.roles.includes("admin") ? (
-                    <TD color="green" role="admin" user={user.username}/>
+                    <TD color="green" role="admin" user={user.username} />
                   ) : (
                     <TD color="red" role="admin" user={user.username} />
                   )}
+                  <td onClick={() => deleteUser(user.username)}>Delete</td>
                 </tr>
               );
             })}

@@ -3,6 +3,7 @@ package entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,17 +15,25 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.mindrot.jbcrypt.BCrypt;
+import security.AES;
+import utils.Env;
 
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
 
+    private static Env env = Env.GetEnv();
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "user_name", length = 25)
     private String userName;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "count", unique = true)
+    private String count;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -59,6 +68,15 @@ public class User implements Serializable {
         this.userName = userName;
 
         this.userPass = BCrypt.hashpw(userPass, BCrypt.gensalt());
+        this.count = AES.encrypt(UUID.randomUUID().toString(), env.aseDatabae);
+    }
+
+    public void newCount() {
+        this.count = AES.encrypt(UUID.randomUUID().toString(), env.aseDatabae);
+    }
+
+    public String getCount() {
+        return AES.decrypt(count, env.aseDatabae);
     }
 
     public String getUserName() {

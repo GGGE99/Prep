@@ -9,8 +9,6 @@ import DTOs.CombinedJokeDTO;
 import DTOs.JokeDTO;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import entities.User;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.security.RolesAllowed;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -34,7 +29,6 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import utils.EMF_Creator;
 import utils.Env;
-import utils.HttpUtils;
 import utils.JokeFinder;
 
 /**

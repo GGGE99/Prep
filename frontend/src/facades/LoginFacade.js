@@ -24,14 +24,8 @@ function apiFacade() {
     ).then(handleHttpErrors);
   };
 
-  const fetchUserRole = (user) => {
-    const options = makeOptions("GET", true);
-    return fetch(URL + "user/" + user, options).then(handleHttpErrors);
-  };
-
   return {
     login,
-    fetchUserRole,
     signup,
   };
 }

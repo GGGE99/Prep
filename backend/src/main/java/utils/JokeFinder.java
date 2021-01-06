@@ -30,8 +30,4 @@ public class JokeFinder {
     public String getJson() {
         return json;
     }
-    
-    
-    
-    
 }
