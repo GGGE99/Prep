@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Container } from "react-bootstrap";
-import { Jokes, Signup, Login, Home, Users } from "./components";
+import { Jokes, Signup, Login, Home, Users, Logout } from "./components";
 import { getUserByJwt } from "./utils/token";
 import { loginMethod, logoutMethode } from "./utils/loginUtils";
 
@@ -20,29 +20,38 @@ function App() {
   }, []);
 
   return (
-    <Container className="con" fluid>
-      <Router>
-        <Navbar user={user} logout={logout} />
-        <Switch>
-          <Route path="/" exact>
-            <Home />
-          </Route>
-          <Route path="/jokes">
-            <Jokes />
-          </Route>
-          <Route path="/products" />
-          <Route path="/signin">
+    <Router>
+      <Navbar user={user} logout={logout} />
+      <Switch>
+        <Route path="/" exact>
+          <Home />
+        </Route>
+        <Route path="/jokes">
+          <Jokes />
+        </Route>
+        <Route path="/products" />
+        <Route path="/signin">
+          <Container className="con" fluid>
             <Login login={login} user={user} logout={logout} error={error} />
-          </Route>
-          <Route path="/signup">
+          </Container>
+        </Route>
+        <Route path="/signup">
+          <Container className="con" fluid>
             <Signup setUser={setUser} setError={setError} error={error} />
-          </Route>
-          <Route path="/users">
+          </Container>
+        </Route>
+        <Route path="/users">
+          <Container className="con" fluid>
             <Users setError={setError} />
-          </Route>
-        </Switch>
-      </Router>
-    </Container>
+          </Container>
+        </Route>
+        <Route path="/logout">
+          <Container className="con" fluid>
+            <Logout />
+          </Container>
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 

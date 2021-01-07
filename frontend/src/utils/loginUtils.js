@@ -1,11 +1,13 @@
 import facade from "../facades/LoginFacade";
-import { getUserByJwt, setToken } from "./token";
+import { getUserByJwt, setToken, setCount } from "./token";
 
 export const loginMethod = (user, pass, setUser, setError) => {
   facade
     .login(user, pass)
     .then((res) => {
+      console.log(res.count)
       setToken(res.token);
+      setCount(res.count);
       setUser({ ...getUserByJwt() });
       setError("")
     })

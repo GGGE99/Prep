@@ -1,7 +1,9 @@
 package entities;
 
+import facades.DateFacade;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.Basic;
@@ -44,6 +46,7 @@ public class User implements Serializable {
         @JoinColumn(name = "role_name", referencedColumnName = "role_name")})
     @ManyToMany
     private List<Role> roleList = new ArrayList<>();
+    private static DateFacade dateFacade = DateFacade.getDateFacade("dd-MM-yyyy HH:mm:ss");
 
     public List<String> getRolesAsStrings() {
         if (roleList.isEmpty()) {
@@ -68,11 +71,11 @@ public class User implements Serializable {
         this.userName = userName;
 
         this.userPass = BCrypt.hashpw(userPass, BCrypt.gensalt());
-        this.count = AES.encrypt(UUID.randomUUID().toString(), env.aseDatabae);
+        newCount();
     }
 
     public void newCount() {
-        this.count = AES.encrypt(UUID.randomUUID().toString(), env.aseDatabae);
+        this.count = AES.encrypt(UUID.randomUUID().toString() + "." + dateFacade.makeDate(0,0,0,0,5,0), env.aseDatabae);
     }
 
     public String getCount() {

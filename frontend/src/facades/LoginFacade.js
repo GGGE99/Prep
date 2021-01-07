@@ -1,8 +1,8 @@
 import { makeOptions, handleHttpErrors } from "../utils/fetchUtils";
-import { loginURL as base } from "../utils/settings";
+import { baseURL } from "../utils/settings";
 
 function apiFacade() {
-  const URL = base + "api/"
+  const URL = baseURL + "api/"
 
   const login = (user, password) => {
     const options = makeOptions("POST", true, {

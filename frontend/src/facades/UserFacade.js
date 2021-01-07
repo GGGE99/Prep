@@ -1,12 +1,12 @@
-import { loginURL as base } from "../utils/settings";
-import { makeOptions, handleHttpErrors } from "../utils/fetchUtils";
+import { baseURL } from "../utils/settings";
+import { makeOptions, handleHttpErrors, fetcher } from "../utils/fetchUtils";
 
 function userFacade() {
-  const URL = base + "api/user/";
+  const URL = baseURL + "api/user/";
 
-  const fetchUsers = () => {
+  const fetchUsers = (action, setError) => {
     const options = makeOptions("GET", true);
-    return fetch(URL + "all", options).then(handleHttpErrors);
+    return fetcher(URL + "all", options, action, setError);
   };
 
   const editRole = (role, username) => {

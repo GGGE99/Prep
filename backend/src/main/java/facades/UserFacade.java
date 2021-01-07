@@ -5,12 +5,16 @@ import entities.Role;
 import entities.User;
 import errorhandling.DatabaseException;
 import errorhandling.InvalidInputException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import static security.LoginEndpoint.USER_FACADE;
+import static security.LoginEndpoint.dateFacade;
 import security.errorhandling.AuthenticationException;
 import utils.EMF_Creator;
 import utils.Env;
@@ -21,6 +25,7 @@ public class UserFacade {
     private static UserFacade instance;
     private static Env env = Env.GetEnv();
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
+    public static final DateFacade dateFacade = DateFacade.getDateFacade("dd-MM-yyyy HH:mm:ss");
 
     private UserFacade() {
     }
@@ -36,6 +41,25 @@ public class UserFacade {
             instance = new UserFacade();
         }
         return instance;
+    }
+
+    public String getDateFromCount(String count) {
+        String[] arr = count.split("\\.");
+        return arr[arr.length - 1];
+    }
+
+    public boolean isCountExpired(String count) throws ParseException {
+        Date dateNow = new Date();
+        Date dateExpire = dateFacade.getDate(getDateFromCount(count));
+        return dateNow.before(dateExpire);
+    }
+
+    public void giveNewCountToUserDB(User user) throws ParseException {
+        EntityManager em = EMF.createEntityManager();
+        em.getTransaction().begin();
+        user.newCount();
+        em.merge(user);
+        em.getTransaction().commit();
     }
 
     public User getVeryfiedUser(String username, String password) throws AuthenticationException {
@@ -94,7 +118,7 @@ public class UserFacade {
         try {
             TypedQuery<User> query = em.createQuery("select u from User u", entities.User.class);
             return query.getResultList();
-        } catch(Exception ex){
+        } catch (Exception ex) {
             throw new DatabaseException("Could not get users from database");
         }
     }

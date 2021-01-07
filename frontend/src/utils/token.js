@@ -33,3 +33,12 @@ export function getUserByJwt() {
     return tempUser
   }
 }
+
+export const getCount = () => {
+  return localStorage.getItem("count");
+};
+
+export const setCount = (count) => {
+  console.log(count)
+  localStorage.setItem("count", count);
+};

@@ -16,6 +16,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import security.errorhandling.AuthenticationException;
 import errorhandling.GenericExceptionMapper;
+import facades.DateFacade;
+import java.text.ParseException;
+import java.util.Date;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import utils.EMF_Creator;
 import utils.Env;
@@ -25,20 +29,26 @@ import utils.TokenUtils;
 public class LoginEndpoint {
 
     private static Env env = Env.GetEnv();
-    public static final int TOKEN_EXPIRE_TIME = 1000 * 60 * 30; //30 min
+    public static final int TOKEN_EXPIRE_TIME = 1000 * 10 * 1; //10sec min
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     public static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
+    public static final DateFacade dateFacade = DateFacade.getDateFacade("dd-MM-yyyy HH:mm:ss");
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(String jsonString) throws AuthenticationException {
+    public Response login(String jsonString) throws AuthenticationException, ParseException {
         JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
         String username = json.get("username").getAsString();
         String password = json.get("password").getAsString();
 
+        User user = null;
         try {
-            User user = USER_FACADE.getVeryfiedUser(username, password);
+            user = USER_FACADE.getVeryfiedUser(username, password);
+
+            if (!USER_FACADE.isCountExpired(user.getCount())) {
+                USER_FACADE.giveNewCountToUserDB(user);
+            }
             String count = AES.encrypt(user.getCount(), env.aseWeb);
             String token = TokenUtils.createToken(username, user.getRolesAsStrings());
             JsonObject responseJson = new JsonObject();

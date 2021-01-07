@@ -4,7 +4,9 @@ import DTOs.UserDTO;
 import DTOs.UsersDTO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -13,6 +15,7 @@ import entities.Role;
 import entities.User;
 import errorhandling.DatabaseException;
 import errorhandling.NotFoundException;
+import facades.DateFacade;
 import facades.UserFacade;
 import java.text.ParseException;
 import java.util.logging.Level;
@@ -36,6 +39,7 @@ import security.UserPrincipal;
 import security.errorhandling.AuthenticationException;
 import utils.EMF_Creator;
 import utils.Env;
+import utils.TokenUtils;
 
 /**
  * @author lam@cphbusiness.dk
@@ -47,6 +51,7 @@ public class UserResource {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     private static UserFacade userFacade = UserFacade.getUserFacade(EMF);
+    private static DateFacade dateFacade = DateFacade.getDateFacade("dd-MM-yyyy HH:mm:ss");
     @Context
     private UriInfo context;
 
@@ -65,7 +70,7 @@ public class UserResource {
     @Path("all")
     @RolesAllowed("admin")
     public String allUsers() throws DatabaseException {
-        return GSON.toJson(new UsersDTO(userFacade.getAllUsers()));  
+        return GSON.toJson(new UsersDTO(userFacade.getAllUsers()));
     }
 
     @POST
@@ -139,7 +144,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("test")
 //    @RolesAllowed("admin")
-    public String test(@HeaderParam("x-access-token") String token, String reg) throws NotFoundException, DatabaseException {
+    public String test(@HeaderParam("x-access-token") String token, String reg) throws NotFoundException, DatabaseException, AuthenticationException {
         EntityManager em = EMF.createEntityManager();
         if (token == null) {
             throw new NotFoundException("No authention token found");
@@ -147,25 +152,36 @@ public class UserResource {
         if (reg == null) {
             throw new NotFoundException("No refresh token found");
         }
-        String refreshToken = GSON.fromJson(reg, JsonObject.class).get("refreshToken").toString();
+        String refreshToken = GSON.fromJson(reg, JsonObject.class).get("count").toString();
         refreshToken = refreshToken.substring(1, refreshToken.length() - 1);
         User user = null;
         try {
             UserPrincipal userPrincipal = getUserPrincipalFromTokenIfValid(token);
-//            user = em.find(User.class, userPrincipal.getName());
+            System.out.println(userPrincipal.getName());
             user = userFacade.findUser(userPrincipal.getName());
-            System.out.println(user.getCount());
-            System.out.println(refreshToken.substring(1, refreshToken.length() - 1));
-            System.out.println(AES.decrypt(refreshToken, env.aseWeb));
-            System.out.println(AES.decrypt(refreshToken, env.aseWeb).equals(user.getCount()));
+            System.out.println(user.getUserName());
 
+            if (userFacade.isCountExpired(user.getCount())) {
+                String newToken = TokenUtils.createToken(user.getUserName(), user.getRolesAsStrings());
+                JsonObject obj = new JsonObject();
+                obj.addProperty("token", newToken);
+                return obj.toString();
+            }
+            throw new AuthenticationException("Refresh token has expired, login again");
+
+            //            System.out.println(user.getCount());
+//            System.out.println(refreshToken.substring(1, refreshToken.length() - 1));
+//            System.out.println(AES.decrypt(refreshToken, env.aseWeb));
+//            System.out.println(AES.decrypt(refreshToken, env.aseWeb).equals(user.getCount()));
+//            System.out.println(userFacade.getDateFromCount(user.getCount()));
             //What if the client had logged out????
         } catch (AuthenticationException | ParseException | JOSEException ex) {
-            System.out.println("err");
-            Logger.getLogger(JWTAuthenticationFilter.class.getName()).log(Level.SEVERE, null, ex);
+            if (ex instanceof AuthenticationException) {
+                throw (AuthenticationException) ex;
+            }
+//            Logger.getLogger(JWTAuthenticationFilter.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return null;
+        throw new NotFoundException("Could not generate new JWT token");
     }
 
     private UserPrincipal getUserPrincipalFromTokenIfValid(String token)

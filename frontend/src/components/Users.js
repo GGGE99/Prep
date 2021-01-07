@@ -7,22 +7,10 @@ export default function Users({ setError }) {
   const [usersTable, setUsersTable] = useState([]);
 
   useEffect(() => {
-    userFacade
-      .fetchUsers()
-      .then((data) => {
-        setUsers([...data]);
-        setUsersTable([...data])
-        console.log(data);
-      })
-      .catch((err) => {
-        if (err.status) {
-          err.fullError.then((e) => {
-            setError(e.message);
-          });
-        } else {
-          setError("Network error");
-        }
-      });
+    userFacade.fetchUsers(({ usersDTO }) => {
+      setUsers([...usersDTO]);
+      setUsersTable([...usersDTO]);
+    }, setError);
   }, []);
 
   const editRole = (role, user) => {
@@ -53,20 +41,20 @@ export default function Users({ setError }) {
   }
 
   const search = (evt) => {
-    const val = evt.target.value
-    let tempArr = []
+    const val = evt.target.value;
+    let tempArr = [];
     users.map((user) => {
-      if(user.username.includes(val)){
-        tempArr = [...tempArr, user]
+      if (user.username.includes(val)) {
+        tempArr = [...tempArr, user];
       }
-    })
-    setUsersTable([...tempArr])
-    console.log(evt.target.value)
-  }
+    });
+    setUsersTable([...tempArr]);
+    console.log(evt.target.value);
+  };
 
   const deleteUser = (username) => {
-    console.log(username)
-  }
+    console.log(username);
+  };
 
   return (
     <Row>
