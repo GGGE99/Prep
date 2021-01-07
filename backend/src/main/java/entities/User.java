@@ -75,7 +75,7 @@ public class User implements Serializable {
     }
 
     public void newCount() {
-        this.count = AES.encrypt(UUID.randomUUID().toString() + "." + dateFacade.makeDate(0,0,0,0,5,0), env.aseDatabae);
+        this.count = AES.encrypt(UUID.randomUUID().toString() + "." + dateFacade.makeDate(0,0,30,0,0,0), env.aseDatabae);
     }
 
     public String getCount() {
