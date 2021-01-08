@@ -112,11 +112,22 @@ public class UserFacade {
         }
     }
 
+    public Role findRole(String roleName) throws DatabaseException {
+        EntityManager em = EMF.createEntityManager();
+
+        try {
+            Role role = em.find(Role.class, roleName);
+            return role;
+        } catch (Exception ex) {
+            throw new DatabaseException(String.format("User with username (%s) was not found in database", roleName));
+        }
+    }
+
     public List<User> getAllUsers() throws DatabaseException {
         EntityManager em = EMF.createEntityManager();
         ArrayList<UserDTO> userDTOs = new ArrayList();
         try {
-            TypedQuery<User> query = em.createQuery("select u from User u", entities.User.class);
+            TypedQuery<User> query = em.createQuery("select u from User u", User.class);
             return query.getResultList();
         } catch (Exception ex) {
             throw new DatabaseException("Could not get users from database");

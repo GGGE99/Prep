@@ -27,7 +27,7 @@ function App() {
           <Home />
         </Route>
         <Route path="/jokes">
-          <Jokes />
+          <Jokes setError={setError}/>
         </Route>
         <Route path="/products" />
         <Route path="/signin">

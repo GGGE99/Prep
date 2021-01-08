@@ -18,23 +18,17 @@ function Signup({ setUser, setError, error }) {
       loginCredentials.username.length > 0
     ) {
       if (loginCredentials.password1 === loginCredentials.password2) {
-        facade
-          .signup(loginCredentials.username, loginCredentials.password1)
-          .then((data) => {
+        facade.signup(
+          loginCredentials.username,
+          loginCredentials.password1,
+          (data) => {
             setToken(data.token);
             setUser({ ...getUserByJwt() });
             setError("");
             history.push("/");
-          })
-          .catch((err) => {
-            if (err.status) {
-              err.fullError.then((e) => {
-                setError(e.message);
-              });
-            } else {
-              setError("Network error");
-            }
-          });
+          },
+          setError
+        );
       } else {
         setError("Password doesn't match");
       }

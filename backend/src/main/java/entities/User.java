@@ -75,7 +75,7 @@ public class User implements Serializable {
     }
 
     public void newCount() {
-        this.count = AES.encrypt(UUID.randomUUID().toString() + "." + dateFacade.makeDate(0,0,30,0,0,0), env.aseDatabae);
+        this.count = AES.encrypt(UUID.randomUUID().toString() + "." + dateFacade.makeDate(0, 0, 30, 0, 0, 0), env.aseDatabae);
     }
 
     public String getCount() {
@@ -112,6 +112,28 @@ public class User implements Serializable {
 
     public void removeRole(Role userRole) {
         roleList.remove(userRole);
+        userRole.removeUser(this);
+        for (Role role : roleList) {
+            System.out.println("In user the list has :" + role.getRoleName());
+        }
+    }
+
+    public boolean isRoleInRoleList(Role role) {
+        for (Role role1 : roleList) {
+            if (role1.getRoleName() == role.getRoleName()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Role getRoleByName(String role) {
+        for (Role role1 : roleList) {
+            if (role1.getRoleName() == role) {
+                return role1;
+            }
+        }
+        return null;
     }
 
 }

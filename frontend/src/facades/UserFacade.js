@@ -9,9 +9,9 @@ function userFacade() {
     return fetcher(URL + "all", options, action, setError);
   };
 
-  const editRole = (role, username) => {
+  const editRole = (role, username, action, setError) => {
     const options = makeOptions("POST", true, { role, username });
-    return fetch(URL + "edit-role", options).then(handleHttpErrors);
+    return fetcher(URL + "edit-role", options, action, setError);
   };
 
   return {

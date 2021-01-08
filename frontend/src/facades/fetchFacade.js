@@ -1,10 +1,11 @@
-import { handleHttpErrors, makeOptions } from "../utils/fetchUtils";
+import { fetcher, handleHttpErrors, makeOptions } from "../utils/fetchUtils";
 import { jokeURL as url } from "../utils/settings";
 
 function jokeFetcher() {
-  const fetchData = () => {
+  const fetchData = (action, setError) => {
     const options = makeOptions("GET", true);
-    return fetch(url, options).then(handleHttpErrors);
+
+    return fetcher(url, options, action, setError);
   };
   return { fetchData };
 }

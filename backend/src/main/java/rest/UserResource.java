@@ -78,8 +78,6 @@ public class UserResource {
     @Path("edit-role")
     @RolesAllowed("admin")
     public String editRole(String input) throws DatabaseException {
-        System.out.println(input);
-
         JsonObject obj = GSON.fromJson(input, JsonObject.class);
 
         EntityManager em = EMF.createEntityManager();
@@ -90,16 +88,28 @@ public class UserResource {
         System.out.println(userString + " : " + roleString);
 
         try {
-            user = em.createQuery("SELECT u FROM User u WHERE u.userName = " + userString, User.class).getSingleResult();
-            role = em.createQuery("SELECT r FROM Role r WHERE r.roleName = " + roleString, Role.class).getSingleResult();
-            System.out.println(role + " : " + user);
+            user = userFacade.findUser(userString.substring(1, userString.length() - 1));
+            role = userFacade.findRole(roleString.substring(1, roleString.length() - 1));
+            
+            Role removeRole = user.getRoleByName(role.getRoleName());
 
             em.getTransaction().begin();
-            if (user.getRoleList().contains(roleString)) {
-                user.removeRole(role);
+            if (user.getRoleList().contains(removeRole)) {
+                user.removeRole(removeRole);
+
+                em.merge(user);
+                for (Role role1 : user.getRoleList()) {
+                    System.out.println(role1.getRoleName());
+                }
+//                em.persist(user);
+                System.out.println("remove");
             } else {
                 user.addRole(role);
+                em.merge(user);
+
+                System.out.println("add");
             }
+
             em.getTransaction().commit();
 
         } catch (Exception ex) {

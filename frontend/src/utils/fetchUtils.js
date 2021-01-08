@@ -18,12 +18,7 @@ export const makeOptions = (method, addToken, body) => {
     },
   };
   if (addToken && getToken()) {
-    console.log(typeof addToken);
-    if (typeof addToken === "boolean") {
-      opts.headers["x-access-token"] = getToken();
-    } else {
-      opts.headers["x-access-token"] = addToken;
-    }
+    opts.headers["x-access-token"] = getToken();
   }
   if (body) {
     opts.body = JSON.stringify(body);
@@ -39,10 +34,9 @@ export const fetcher = (URL, options, action, setError, actionIfError) => {
       if (err.status === 403) {
         refreshJWT(getCount())
           .then((data) => {
-            console.log(options.body)
             setToken(data.token);
-            options = makeOptions(options.method, data.token, options.body)
-            console.log(options.body)
+            setToken(data.token);
+            options.headers["x-access-token"] = data.token;
             fetch(URL, options)
               .then(handleHttpErrors)
               .then(action)
@@ -54,7 +48,7 @@ export const fetcher = (URL, options, action, setError, actionIfError) => {
           .catch((err) => {
             if (err.status === 403) {
               //promt user to logout
-              window.location.href = "/logout"
+              window.location.href = "/logout";
             }
             catcher(err, setError);
           });
@@ -66,7 +60,6 @@ export const fetcher = (URL, options, action, setError, actionIfError) => {
 
 const refreshJWT = () => {
   const options = makeOptions("POST", true, { count: getCount() });
-  console.log(options);
   return fetch(baseURL + "api/user/test", options).then(handleHttpErrors);
 };
 

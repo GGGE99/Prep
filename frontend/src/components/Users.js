@@ -14,18 +14,7 @@ export default function Users({ setError }) {
   }, []);
 
   const editRole = (role, user) => {
-    userFacade
-      .editRole(role, user)
-      .then((data) => console.log(data))
-      .catch((err) => {
-        if (err.status) {
-          err.fullError.then((e) => {
-            setError(e.message);
-          });
-        } else {
-          setError("Network error");
-        }
-      });
+    userFacade.editRole(role, user, (data) => console.log(data), setError);
   };
 
   function TD({ color, role, user }) {
@@ -33,8 +22,8 @@ export default function Users({ setError }) {
       <td
         style={{ background: color }}
         onClick={(evt) => {
-          evt.nativeEvent.originalTarget.style.background = "blue";
           editRole(role, user);
+          evt.nativeEvent.originalTarget.style.background = "blue";
         }}
       ></td>
     );
