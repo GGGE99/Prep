@@ -70,12 +70,12 @@ export default function Users({ setError }) {
               return (
                 <tr>
                   <td>{user.username}</td>
-                  {user.roles.includes("user") ? (
+                  {user.roles && user.roles.includes("user") ? (
                     <TD color="green" role="user" user={user.username} />
                   ) : (
                     <TD color="red" role="user" user={user.username} />
                   )}
-                  {user.roles.includes("admin") ? (
+                  {user.roles && user.roles.includes("admin") ? (
                     <TD color="green" role="admin" user={user.username} />
                   ) : (
                     <TD color="red" role="admin" user={user.username} />

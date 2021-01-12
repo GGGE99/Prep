@@ -3,11 +3,14 @@ package entities;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.Persistence;
 import javax.persistence.Table;
+import javax.persistence.metamodel.Type;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -25,7 +28,7 @@ public class Role implements Serializable {
     @Column(name = "role_name", length = 20)
     private String roleName;
     
-    @ManyToMany(mappedBy = "roleList")
+    @ManyToMany(mappedBy = "roleList", cascade = CascadeType.REMOVE)
     private List<User> userList;
 
     public Role() {

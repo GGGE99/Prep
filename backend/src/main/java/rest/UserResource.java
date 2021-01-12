@@ -85,12 +85,11 @@ public class UserResource {
         Role role = null;
         String userString = obj.get("username").toString();
         String roleString = obj.get("role").toString();
-        System.out.println(userString + " : " + roleString);
 
         try {
             user = userFacade.findUser(userString.substring(1, userString.length() - 1));
             role = userFacade.findRole(roleString.substring(1, roleString.length() - 1));
-            
+
             Role removeRole = user.getRoleByName(role.getRoleName());
 
             em.getTransaction().begin();
@@ -98,16 +97,9 @@ public class UserResource {
                 user.removeRole(removeRole);
 
                 em.merge(user);
-                for (Role role1 : user.getRoleList()) {
-                    System.out.println(role1.getRoleName());
-                }
-//                em.persist(user);
-                System.out.println("remove");
             } else {
                 user.addRole(role);
                 em.merge(user);
-
-                System.out.println("add");
             }
 
             em.getTransaction().commit();

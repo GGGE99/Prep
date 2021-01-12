@@ -2,11 +2,13 @@ package rest;
 
 import DTOs.UserDTO;
 import com.google.gson.JsonObject;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import entities.Role;
 import entities.User;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
+import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import java.net.URI;
 import javax.persistence.EntityManager;
@@ -22,6 +24,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import org.hamcrest.beans.SamePropertyValuesAs;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -134,12 +137,6 @@ public class RenameMeResourceTest {
 
     @Test
     public void testAllEndpoint() {
-        EntityManager em = emf.createEntityManager();
-        User user = em.find(User.class, "admin");
-        String userString = "{username:admin,roles:[admin]}";
-        JsonObject userObj = new JsonObject();
-        userObj.addProperty("username", user.getUserName());
-        userObj.addProperty("roles", "[admin]");
         login("admin", "test");
         given()
                 .contentType("application/json")
@@ -156,22 +153,23 @@ public class RenameMeResourceTest {
     @Test
     public void testEditRoleEndPoint() {
         EntityManager em = emf.createEntityManager();
-        User user = em.find(User.class, "admin");
-        String userString = "{username:admin,roles:[admin]}";
-        JsonObject userObj = new JsonObject();
-        userObj.addProperty("username", user.getUserName());
-        userObj.addProperty("roles", "[admin]");
+
+        JSONObject req = new JSONObject();
+        req.put("username", "user");
+        req.put("role", "admin");
+
         login("admin", "test");
         given()
                 .contentType("application/json")
+                .accept(ContentType.JSON)
                 .header("x-access-token", securityToken)
+                .body(req.toJSONString())
                 .when()
-                .get("/user/all").then()
-                .statusCode(200)
-                .body("usersDTO", notNullValue())
-                .body("usersDTO[0].username", equalTo("admin"))
-                .body("usersDTO[0].roles[0]", equalTo("admin"));
-
+                .post("/user/edit-role").then()
+                .statusCode(200);
+        
+        User user = em.find(User.class, "user");
+        Assertions.assertEquals(2, user.getRoleList().size());
     }
 
 //    //This test assumes the database contains two rows
