@@ -133,9 +133,9 @@ public class UserFacadeTest {
     @Test
     public void testFindRole() throws DatabaseException {
         EntityManager em = emf.createEntityManager();
-        Role actual = em.find(Role.class, "admin");
-        Role expected = facade.findRole(actual.getRoleName());
-        assertThat(actual, samePropertyValuesAs(expected));
+        String actual = em.find(Role.class, "admin").getRoleName();
+        Role expected = facade.findRole(actual);
+        assertEquals(actual, expected.getRoleName());
     }
 
     @Test
