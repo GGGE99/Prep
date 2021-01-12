@@ -1,5 +1,7 @@
 package rest;
 
+import DTOs.UserDTO;
+import com.google.gson.JsonObject;
 import entities.Role;
 import entities.User;
 import utils.EMF_Creator;
@@ -15,6 +17,10 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
+import org.hamcrest.beans.SamePropertyValuesAs;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -124,6 +130,48 @@ public class RenameMeResourceTest {
                 .get("/user/").then()
                 .statusCode(200)
                 .body("msg", equalTo("Hello anonymous"));
+    }
+
+    @Test
+    public void testAllEndpoint() {
+        EntityManager em = emf.createEntityManager();
+        User user = em.find(User.class, "admin");
+        String userString = "{username:admin,roles:[admin]}";
+        JsonObject userObj = new JsonObject();
+        userObj.addProperty("username", user.getUserName());
+        userObj.addProperty("roles", "[admin]");
+        login("admin", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/user/all").then()
+                .statusCode(200)
+                .body("usersDTO", notNullValue())
+                .body("usersDTO[0].username", equalTo("admin"))
+                .body("usersDTO[0].roles[0]", equalTo("admin"));
+
+    }
+
+    @Test
+    public void testEditRoleEndPoint() {
+        EntityManager em = emf.createEntityManager();
+        User user = em.find(User.class, "admin");
+        String userString = "{username:admin,roles:[admin]}";
+        JsonObject userObj = new JsonObject();
+        userObj.addProperty("username", user.getUserName());
+        userObj.addProperty("roles", "[admin]");
+        login("admin", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/user/all").then()
+                .statusCode(200)
+                .body("usersDTO", notNullValue())
+                .body("usersDTO[0].username", equalTo("admin"))
+                .body("usersDTO[0].roles[0]", equalTo("admin"));
+
     }
 
 //    //This test assumes the database contains two rows
