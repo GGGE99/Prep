@@ -32,7 +32,7 @@ import security.errorhandling.AuthenticationException;
 
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
-public class FacadeExampleTest {
+public class UserFacadeTest {
 
     private static EntityManagerFactory emf;
     private static UserFacade facade;
@@ -45,7 +45,7 @@ public class FacadeExampleTest {
 
 //    private static Role userRole = new Role("user");
 //    private static Role adminRole = new Role("admin");
-    public FacadeExampleTest() {
+    public UserFacadeTest() {
     }
 
     @BeforeAll
