@@ -24,11 +24,7 @@ public class UserFacade {
     private static EntityManagerFactory emf;
     private static UserFacade instance;
     private static Env env = Env.GetEnv();
-    private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     public static final DateFacade dateFacade = DateFacade.getDateFacade("dd-MM-yyyy HH:mm:ss");
-
-    private UserFacade() {
-    }
 
     /**
      *
@@ -55,7 +51,7 @@ public class UserFacade {
     }
 
     public void giveNewCountToUserDB(User user) throws ParseException {
-        EntityManager em = EMF.createEntityManager();
+        EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         user.newCount();
         em.merge(user);
@@ -102,18 +98,21 @@ public class UserFacade {
     }
 
     public User findUser(String username) throws DatabaseException {
-        EntityManager em = EMF.createEntityManager();
-
+        EntityManager em = emf.createEntityManager();
+        System.out.println(username);
         try {
-            User user = em.find(User.class, username);
+            User user = null;
+            user = em.find(User.class, username);
+
             return user;
+
         } catch (Exception ex) {
             throw new DatabaseException(String.format("User with username (%s) was not found in database", username));
         }
     }
 
     public Role findRole(String roleName) throws DatabaseException {
-        EntityManager em = EMF.createEntityManager();
+        EntityManager em = emf.createEntityManager();
 
         try {
             Role role = em.find(Role.class, roleName);
@@ -124,7 +123,7 @@ public class UserFacade {
     }
 
     public List<User> getAllUsers() throws DatabaseException {
-        EntityManager em = EMF.createEntityManager();
+        EntityManager em = emf.createEntityManager();
         ArrayList<UserDTO> userDTOs = new ArrayList();
         try {
             TypedQuery<User> query = em.createQuery("select u from User u", User.class);
