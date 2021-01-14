@@ -15,11 +15,11 @@ export default function Jokes({setError}) {
         <p>Loading..</p>
       ) : (
         <>
-          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer.joke1}</h3>
-          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer.joke2}</h3>
-          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer.joke3}</h3>
-          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer.joke4}</h3>
-          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer.joke5}</h3>
+          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer[1]}</h3>
+          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer[2]}</h3>
+          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer[3]}</h3>
+          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer[4]}</h3>
+          <h3 className="p-3" style={{borderBottom: 2+"px solid black"}}>{dataFromServer[5]}</h3>
         </>
       )}
     </div>

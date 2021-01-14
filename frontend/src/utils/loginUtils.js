@@ -25,6 +25,8 @@ export const loginMethod = (user, pass, setUser, setError) => {
 export const logoutMethode = (setUser, init) => {
   setUser({...init});
   localStorage.removeItem("jwtToken")
+  localStorage.removeItem("count")
+
 };
 
 

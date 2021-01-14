@@ -9,9 +9,12 @@ import DTOs.CombinedJokeDTO;
 import DTOs.JokeDTO;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import facades.APIFacade;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +32,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import utils.EMF_Creator;
 import utils.Env;
-import utils.JokeFinder;
+import utils.FetchFinder;
 
 /**
  *
@@ -41,6 +44,7 @@ public class JokeResource {
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     private static ExecutorService es = Executors.newCachedThreadPool();
     private static Gson GSON = new Gson();
+    private static APIFacade api = APIFacade.getUserFacade(es);
     @Context
     private UriInfo context;
 
@@ -58,51 +62,22 @@ public class JokeResource {
 //    @RolesAllowed("user")
     public String getJokes() throws IOException, InterruptedException, ExecutionException, TimeoutException {
         Env ENV = Env.GetEnv();
-        List<String> URLS = new ArrayList();
-        URLS.add(ENV.jokeURL1);
-        URLS.add(ENV.jokeURL2);
-        URLS.add(ENV.jokeURL3);
-        URLS.add(ENV.jokeURL4);
-        URLS.add(ENV.jokeURL5);
-
-        List<JokeFinder> urls = new ArrayList();
-        for (String string : URLS) {
-            urls.add(new JokeFinder(string));
-        }
-
-        List<Future<String>> futures = new ArrayList();
-        for (JokeFinder jf : urls) {
-            JokeHandler jh = new JokeHandler(jf);
-            futures.add(es.submit(jh));
-        }
-        List<String> results = new ArrayList();
-        for (Future<String> f : futures) {
-            results.add(f.get(10, TimeUnit.SECONDS));
-            System.out.println(f.get());
-        }
-        JokeDTO joke = new JokeDTO(GSON.fromJson(results.get(0), JsonObject.class).get("joke").toString().split("\"")[1], URLS.get(0));
-        JokeDTO joke1 = new JokeDTO(GSON.fromJson(results.get(1), JsonObject.class).get("value").toString().split("\"")[1], URLS.get(1));
-        JokeDTO joke2 = new JokeDTO(results.get(2), URLS.get(2));
-        JokeDTO joke3 = new JokeDTO(GSON.fromJson(results.get(3), JsonObject.class).get("value").toString().split("\"")[1], URLS.get(3));
-        JokeDTO joke4 = new JokeDTO(GSON.fromJson(results.get(4), JsonObject.class).get("joke").toString().split("\"")[1], URLS.get(4));
-
-        CombinedJokeDTO combi = new CombinedJokeDTO(joke, joke1, joke2, joke3, joke4);
-
-        return GSON.toJson(combi);
+        
+        HashMap<String, ArrayList<String>> map = new HashMap();
+        map.put("1", arrayMakker("joke", ENV.jokeURL1));
+        map.put("2", arrayMakker("value", ENV.jokeURL2));
+        map.put("3", arrayMakker(null, ENV.jokeURL3));
+        map.put("4", arrayMakker("value", ENV.jokeURL4));
+        map.put("5", arrayMakker("joke", ENV.jokeURL5));
+        Map<String, String> data = api.getProcessedData(map);
+        
+        return GSON.toJson(data);
     }
 
-    class JokeHandler implements Callable<String> {
-
-        JokeFinder tc;
-
-        JokeHandler(JokeFinder tc) {
-            this.tc = tc;
-        }
-
-        @Override
-        public String call() throws Exception {
-            tc.get();
-            return new String(tc.getJson());
-        }
+    private ArrayList<String> arrayMakker(String val1, String val2) {
+        ArrayList<String> arr = new ArrayList();
+        arr.add(val1);
+        arr.add(val2);
+        return arr;
     }
 }

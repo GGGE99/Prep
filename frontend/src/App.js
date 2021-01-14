@@ -47,7 +47,7 @@ function App() {
         </Route>
         <Route path="/logout">
           <Container className="con" fluid>
-            <Logout />
+            <Logout logout={logout}/>
           </Container>
         </Route>
       </Switch>

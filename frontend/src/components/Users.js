@@ -17,6 +17,10 @@ export default function Users({ setError }) {
     userFacade.editRole(role, user, (data) => console.log(data), setError);
   };
 
+  const deleteUser = (username) => {
+    userFacade.deleteUser(username, (data) => console.log(data), setError);
+  };
+
   function TD({ color, role, user }) {
     return (
       <td
@@ -39,10 +43,6 @@ export default function Users({ setError }) {
     });
     setUsersTable([...tempArr]);
     console.log(evt.target.value);
-  };
-
-  const deleteUser = (username) => {
-    console.log(username);
   };
 
   return (

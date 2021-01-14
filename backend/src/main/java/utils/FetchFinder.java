@@ -11,11 +11,11 @@ import java.io.IOException;
  *
  * @author marcg
  */
-public class JokeFinder {
+public class FetchFinder {
     private String url;
     private String json;
 
-    public JokeFinder(String url) {
+    public FetchFinder(String url) {
         this.url = url;
     }
     

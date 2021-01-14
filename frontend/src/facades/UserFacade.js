@@ -14,9 +14,15 @@ function userFacade() {
     return fetcher(URL + "edit-role", options, action, setError);
   };
 
+  const deleteUser = (username, action, setError) => {
+    const options = makeOptions("POST", true, { username });
+    return fetcher(URL + "delete", options, action, setError);
+  };
+
   return {
     fetchUsers,
     editRole,
+    deleteUser
   };
 }
 

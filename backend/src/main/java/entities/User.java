@@ -115,6 +115,13 @@ public class User implements Serializable {
         userRole.removeUser(this);
     }
 
+    public void removeAllRoles() {
+        for (Role role : roleList) {
+            roleList.remove(role);
+            role.removeUser(this);
+        }
+    }
+
     public boolean isRoleInRoleList(Role role) {
         for (Role role1 : roleList) {
             if (role1.getRoleName() == role.getRoleName()) {

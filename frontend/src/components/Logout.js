@@ -3,24 +3,27 @@ import React, { useState } from "react";
 import { Jumbotron, Row, Col, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-function LoginDisplay({}) {
-  //   const init = { username: "", password: "" };
-  //   const [loginCredentials, setLoginCredentials] = useState(init);
-
-  //   const performLogin = (evt) => {
-  //     evt.preventDefault();
-  //     login(loginCredentials.username, loginCredentials.password);
-  //   };
-  //   const onChange = (evt) => {
-  //     setLoginCredentials({
-  //       ...loginCredentials,
-  //       [evt.target.id]: evt.target.value,
-  //     });
-  //   };
+function LoginDisplay({ logout }) {
   return (
     <Row>
-        <h1>Du har været loget ind for længe og skal derfor loge ind igen :D</h1>
-      <button>Logout!!!</button>
+      <Col></Col>
+      <Col>
+        <Jumbotron>
+          <h3>
+            Du har været loget ind for længe og skal derfor loge ind igen
+          </h3>
+          <button
+            className="btn btn-block btn-primary ml-2"
+            onClick={() => {
+              logout();
+              window.location.href = "/signin";
+            }}
+          >
+            Login again
+          </button>
+        </Jumbotron>
+      </Col>
+      <Col></Col>
     </Row>
   );
 }

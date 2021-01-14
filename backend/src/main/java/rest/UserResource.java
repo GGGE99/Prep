@@ -125,12 +125,13 @@ public class UserResource {
         EntityManager em = EMF.createEntityManager();
         User user = null;
         String userString = obj.get("username").toString();
+        userString = userString.substring(1, userString.length() - 1);
 
         try {
-            user = em.createQuery("SELECT u FROM User u WHERE u.userName = " + userString, User.class).getSingleResult();
+            user = userFacade.findUser(userString);
             em.getTransaction().begin();
-
-            em.remove(em);
+            user.removeAllRoles();
+            em.createQuery("DELETE FROM User u WHERE u.userName ='" + userString + "'").executeUpdate();
             em.getTransaction().commit();
 
         } catch (Exception ex) {
