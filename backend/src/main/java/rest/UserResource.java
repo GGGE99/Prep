@@ -130,7 +130,6 @@ public class UserResource {
         try {
             user = userFacade.findUser(userString);
             em.getTransaction().begin();
-            user.removeAllRoles();
             em.createQuery("DELETE FROM User u WHERE u.userName ='" + userString + "'").executeUpdate();
             em.getTransaction().commit();
 
@@ -145,9 +144,9 @@ public class UserResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("test")
+    @Path("refresh")
 //    @RolesAllowed("admin")
-    public String test(@HeaderParam("x-access-token") String token, String reg) throws NotFoundException, DatabaseException, AuthenticationException {
+    public String refreshToken(@HeaderParam("x-access-token") String token, String reg) throws NotFoundException, DatabaseException, AuthenticationException {
         EntityManager em = EMF.createEntityManager();
         if (token == null) {
             throw new NotFoundException("No authention token found");

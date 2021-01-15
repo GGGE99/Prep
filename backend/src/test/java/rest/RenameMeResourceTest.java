@@ -95,6 +95,7 @@ public class RenameMeResourceTest {
 
     //This is how we hold on to the token after login, similar to that a client must store the token somewhere
     private static String securityToken;
+    private static String count;
 
     //Utility method to login and set the returned securityToken
     private static void login(String role, String password) {
@@ -106,6 +107,18 @@ public class RenameMeResourceTest {
                 .when().post("/login")
                 .then()
                 .extract().path("token");
+        //System.out.println("TOKEN ---> " + securityToken);
+    }
+
+    private static void getCount(String role, String password) {
+        String json = String.format("{username: \"%s\", password: \"%s\"}", role, password);
+        count = given()
+                .contentType("application/json")
+                .body(json)
+                //.when().post("/api/login")
+                .when().post("/login")
+                .then()
+                .extract().path("count");
         //System.out.println("TOKEN ---> " + securityToken);
     }
 
@@ -160,9 +173,50 @@ public class RenameMeResourceTest {
                 .when()
                 .post("/user/edit-role").then()
                 .statusCode(200);
-        
+
         User user = em.find(User.class, "user");
         Assertions.assertEquals(2, user.getRoleList().size());
+    }
+
+    @Test
+    public void testDeleteUser() {
+        EntityManager em = emf.createEntityManager();
+
+        JSONObject req = new JSONObject();
+        req.put("username", "user");
+
+        login("admin", "test");
+        given()
+                .contentType("application/json")
+                .accept(ContentType.JSON)
+                .header("x-access-token", securityToken)
+                .body(req.toJSONString())
+                .when()
+                .post("/user/delete").then()
+                .statusCode(200);
+
+        User user = em.find(User.class, "user");
+        Assertions.assertEquals(user, null);
+    }
+
+    @Test
+    public void testRefresh() {
+        EntityManager em = emf.createEntityManager();
+
+        JSONObject req = new JSONObject();
+        req.put("count", count);
+
+        login("admin", "test");
+        given()
+                .contentType("application/json")
+                .accept(ContentType.JSON)
+                .header("x-access-token", securityToken)
+                .body(req.toJSONString())
+                .when()
+                .post("/user/refresh").then()
+                .statusCode(200)
+                .body("token", notNullValue());
+
     }
 
 //    //This test assumes the database contains two rows
